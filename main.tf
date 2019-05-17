@@ -186,8 +186,8 @@ module "gg_instance" {
   region = "${var.primary_region}"
 
   min = 1
-  max = 1
-  desired = 1
+  max = 10
+  desired = 5
   name_prefix = "gg-primary"
   azs = ["${var.primary_subnet1_az}", "${var.primary_subnet2_az}"]
   subnets = ["${module.primary_vpc.subnet1_subnet_id}", "${module.primary_vpc.subnet2_subnet_id}"]
@@ -200,5 +200,14 @@ module "gg_instance" {
       mkdir /EFS
       echo "${module.primary_efs.efs_target1_ip}:/  /EFS nfs4  nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2  0 0" >> /etc/fstab
       mount /EFS; chmod a+w /EFS
+      export INSTANCE_ID=$(curl http://169.254.169.254/latest/meta-data/instance-id)
+      mkdir /EFS/$INSTANCE_ID
+      cd /EFS/$INSTANCE_ID
+      wget https://github.com/electrum/tpch-dbgen/archive/master.zip
+      unzip master.zip
+      cd tpch-dbgen-master
+      OS=LINUX make
+      ./dbgen -v -T L -s 2 -o ../
+      aws autoscaling set-instance-health --instance-id $INSTANCE_ID --health-status Unhealthy
     EOF
 }

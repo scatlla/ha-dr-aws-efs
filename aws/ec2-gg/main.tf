@@ -70,6 +70,7 @@ resource "aws_launch_configuration" "as_conf" {
   security_groups = ["${aws_security_group.gg_ec2.id}"]
   associate_public_ip_address = true
   user_data = "${var.user_data}"
+//  iam_instance_profile = ""
 
   lifecycle {
     create_before_destroy = true
