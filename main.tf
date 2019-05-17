@@ -199,6 +199,6 @@ module "gg_instance" {
       sudo yum install -y gcc
       mkdir /EFS
       echo "${module.primary_efs.efs_target1_ip}:/  /EFS nfs4  nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2  0 0" >> /etc/fstab
-      mount /EFS
+      mount /EFS; chmod a+w /EFS
     EOF
 }
