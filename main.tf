@@ -146,8 +146,8 @@ module "efs_ec2_ha_primary" {
       mkdir /EFS-DR
       echo "${module.primary_efs.efs_target1_ip}:/  /EFS-HA nfs4  nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2  0 0" >> /etc/fstab
       echo "${module.secondary_efs.efs_target1_ip}:/  /EFS-DR nfs4  nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2  0 0" >> /etc/fstab
-      mount /EFS-HA
-      mount /EFS-DR
+      mount /EFS-HA; chmod a+w /EFS-HA
+      mount /EFS-DR; chmod a+w /EFS-DR
       (crontab -l; echo '@reboot    while [[ 1 == 1 ]]; do rsync -av /EFS-HA/ /EFS-DR/ 1>/dev/null 2>&1; sleep 300; done') | crontab -
       reboot
     EOF
